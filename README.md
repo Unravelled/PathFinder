@@ -19,7 +19,7 @@ To build the elasticsearch image and register it as pathfinder/elasticsearch run
 
     docker build -t pathfinder/elasticsearch .
 
-To start the container and expose the 9200 and 9300 porst do:
+To start the container and expose the 9200 and 9300 ports do:
 
     docker run --name elasticsearch -d -p 9200:9200 -p 9300:9300 pathfinder/elasticsearch
 
