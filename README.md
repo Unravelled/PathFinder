@@ -15,7 +15,7 @@ You should also add a host alias to your hosts file:
 
     echo "$DOCKER_HOST docker" | sudo tee --append /etc/hosts
 
-To build the elasticsearch image and register it as pathfinder/elasticsearch run the following command from the directory containing the Dockerfile:
+To build the elasticsearch image and register it as pathfinder/elasticsearch run the following command from the docker directory, containing the Dockerfile:
 
     docker build -t pathfinder/elasticsearch .
 
