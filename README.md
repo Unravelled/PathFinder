@@ -1,6 +1,10 @@
 PathFinder
 ==========
 
+## Build status
+
+[![Build Status](https://api.shippable.com/projects/53fa3961cd0ccca20615049d/badge/shippable)](https://www.shippable.com/projects/53fa3961cd0ccca20615049d)
+
 ## Starting up the elasticsearch docker container
 
 First, make sure you have docker installed. For Ubuntu this should be as straightforward as installing an aptitude package. For OS X please see the boot2docker instructions below. Then do:
