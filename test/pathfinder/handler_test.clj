@@ -1,12 +1,13 @@
 (ns pathfinder.handler-test
   (:use midje.sweet
         pathfinder.core
-        pathfinder.handler
+        pathfinder.service
         compojure.core
-        [ring.mock.request :only [request header]]))
+        [ring.mock.request :only [request header]])
+  (:require [compojure.handler :as handler]))
 
 (facts "about the main routes"
   "Bare request returns hello world"
-  (app {:uri "/" :request-method :get})
+  ((handler/site main-routes) {:uri "/" :request-method :get})
   => (contains {:status 200
                 :body "Hello World"}))
