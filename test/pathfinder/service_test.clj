@@ -1,4 +1,4 @@
-(ns pathfinder.handler-test
+(ns pathfinder.service-test
   (:use midje.sweet
         pathfinder.core
         pathfinder.service
