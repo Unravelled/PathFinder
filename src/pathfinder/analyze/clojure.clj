@@ -1,9 +1,11 @@
 (ns pathfinder.analyze.clojure
   (:require [pathfinder.analyze.analyzer :refer [Analyzer]]
-            [clojure.java.io :as io]
-            [clojure.tools.reader.reader-types :as readers]
+            [clojure.string :as str]
             [clojure.tools.reader :as reader]
             [clojure.tools.analyzer.jvm :as jvm-analyzer]))
+
+(defmacro def- [symbol init?]
+  `(def ^:private ~symbol ~init?))
 
 ;; TODO: arbitrary code can be executed during read (and obviously
 ;; evaluation) of clojure code. Currently, these analyzers should only
@@ -33,9 +35,64 @@
         (->> (map jvm-analyzer/analyze))
         #_(extract-data-model meta))))
 
+(defn extract-pos-from-meta [form]
+  (select-keys (meta form) [:column :line :end-column :end-line]))
+
+(defn- prefix-spec? [form]
+  (and (sequential? form) ; should be a list, but often is not
+       (symbol? (first form))
+       (not-any? keyword? form)
+       (< 1 (count form)))) ; not a bare vector like [foo]
+
+(defn- option-spec? [form]
+  (and (sequential? form) ; should be a vector, but often is not
+       (symbol? (first form))
+       (or (keyword? (second form)) ; vector like [foo :as f]
+           (= 1 (count form))))) ; bare vector like [foo]
+
+(defn- reduce-libspecs [option-reducer]
+  (fn help
+    ([libspecs] (help nil libspecs))
+    ([prefix libspecs]
+       (reduce (fn [acc spec]
+                 (cond (prefix-spec? spec) (help (first spec) (rest spec))
+                       (option-spec? spec) (option-reducer acc prefix spec)
+                       :else acc))
+               []
+               libspecs))))
+
+(def- find-aliases
+  (reduce-libspecs (fn [acc prefix spec]
+                     (concat acc
+                             (map vector (->> (rest spec)
+                                              (partition 2)
+                                              (filter #(= :as (first %)))
+                                              (map second))
+                                  (repeat (str (when prefix (str prefix "."))
+                                               (first spec))))))))
+
+(def- find-refers
+  (reduce-libspecs (fn [acc prefix spec]
+                     (->> (rest spec)
+                          (partition 2)
+                          (filter #(= :refer (first %)))
+                          (mapcat second)
+                          (map (fn [f] [f (str (when prefix (str prefix "."))
+                                               (first spec) "/" f)]))
+                          (concat acc)))))
+
+(defn- extract-require-forms [coll]
+  (->> coll
+       (filter #(and (list? %) (= :require (first %))))
+       (mapcat rest)))
+
 (defn- extract-ns [state form]
   (if (and (list? form) (= (first form) 'ns))
-    (assoc state :ns (second form))
+    (let [require-forms (extract-require-forms form)]
+      (assoc state :ns
+             {:name (second form)
+              :aliases (into {} (find-aliases require-forms))
+              :refers (into {} (find-refers require-forms))}))
     state))
 
 (defn- extract-definition [state form]
@@ -53,14 +110,48 @@
                 defstruct :struct
                 deftype :class}]
     (if (and (list? form) (.startsWith (str (first form)) "def")) ;crude
-      (update-in state [:model :definitions]
-                 conj {:name (str (:ns state) (if (:ns state) "/" "") (second form))
-                       :type (get types (first form) :unknown)
-                       :pos (select-keys (meta form) [:column :line :end-column :end-line])})
+      (let [ns (get-in state [:ns :name])]
+        (update-in state [:model :definitions]
+                   conj {:name (str ns (if ns "/" "") (second form))
+                         :type (get types (first form) :unknown)
+                         :pos (extract-pos-from-meta form)}))
       state)))
 
-;;; TODO:
-(defn- extract-usages [state form] state)
+(defn- find-usages [interesting-usage? build-usage form]
+  (letfn [(help [form]
+            (cond
+             (and (list? form) (empty? form)) nil
+             (and (list? form) (= (first form) 'quote)) nil
+             (list? form) (if (interesting-usage? (first form))
+                            ;; TODO: usages can occur more than once
+                            (cons (build-usage (first form)) (mapcat help (rest form)))
+                            (mapcat help (rest form)))))]
+    (help form)))
+
+(defn- split-f-name [f-name] (str/split (str f-name) #"/" 2))
+
+(defn- build-usage [ns]
+  (fn [f-name]
+    (let [name (split-f-name f-name)
+          resolved-name (if (= (count name) 2)
+                          (str (get (:aliases ns) (symbol (first name))) "/" (second name))
+                          (get (:refers ns) (symbol (first name))))]
+      {:name resolved-name
+       :pos (extract-pos-from-meta f-name)})))
+
+(defn- explicitly-required [ns]
+  (fn [f-name]
+    (let [name (split-f-name f-name)]
+      (if (= (count name) 2)
+        (contains? (:aliases ns) (symbol (first name)))
+        (contains? (:refers ns) (symbol (first name)))))))
+
+;;; TODO: interesting if it is a definition in same file too
+
+(defn- extract-usages [state form]
+  (update-in state [:model :usages] concat (find-usages (explicitly-required (:ns state))
+                                                        (build-usage (:ns state))
+                                                        form)))
 
 (defn- guess-data-model [forms]
   (->> forms
