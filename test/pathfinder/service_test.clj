@@ -9,5 +9,13 @@
 (facts "about the main routes"
   "Bare request returns hello world"
   ((handler/site main-routes) {:uri "/" :request-method :get})
-  => (contains {:status 200
-                :body "Hello World"}))
+  => (contains {:status 404})
+  ((handler/site main-routes) {:uri "/project" :request-method :get})
+  => (contains {:status 200})
+  ((handler/site main-routes) {:uri "/file" :request-method :get})
+  => (contains {:status 200})
+  ((handler/site main-routes) {:uri "/query" :request-method :get})
+  => (contains {:status 200})
+  )
+
+

@@ -8,6 +8,8 @@
                  [org.clojure/tools.analyzer.jvm "0.5.4"]
                  [clojurewerkz/elastisch "2.1.0-beta4"]
                  [compojure "1.1.8"]
+                 [liberator "0.10.0"]
+                 [ring/ring-core "1.2.1"]
                  [ring/ring-jetty-adapter "1.3.1"]]
   :profiles {:dev {:dependencies [[midje "1.6.3"]
                                   [javax.servlet/servlet-api "2.5"]
