@@ -1,8 +1,9 @@
 (ns pathfinder.analyze.clojure
-  (:require [pathfinder.analyze.analyzer :refer [Analyzer]]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
+            [clojure.tools.analyzer.jvm :as jvm-analyzer]
             [clojure.tools.reader :as reader]
-            [clojure.tools.analyzer.jvm :as jvm-analyzer]))
+            [clojure.tools.reader.reader-types :as readers]
+            [pathfinder.analyze.analyzer :refer [Analyzer]]))
 
 (defmacro def- [symbol init?]
   `(def ^:private ~symbol ~init?))
@@ -117,16 +118,28 @@
                          :pos (extract-pos-from-meta form)}))
       state)))
 
+(defn- merge-with-key
+  "Merge maps with a common scalar key. All other values should be
+  seqs."
+  [key maps]
+  (->> maps
+       (group-by key)
+       (map (fn [[key-value maps]]
+              (->> maps
+                   (map #(dissoc % key))
+                   (apply merge-with concat)
+                   (#(assoc % key key-value)))))))
+
 (defn- find-usages [interesting-usage? build-usage form]
-  (letfn [(help [form]
-            (cond
-             (and (list? form) (empty? form)) nil
-             (and (list? form) (= (first form) 'quote)) nil
-             (list? form) (if (interesting-usage? (first form))
-                            ;; TODO: usages can occur more than once
-                            (cons (build-usage (first form)) (mapcat help (rest form)))
-                            (mapcat help (rest form)))))]
-    (help form)))
+  (letfn [(reduce-form [form]
+            (when (list? form)
+              (cond
+               (empty? form) nil
+               (= (first form) 'quote) nil
+               :else (if (interesting-usage? (first form))
+                       (cons (build-usage (first form)) (mapcat reduce-form (rest form)))
+                       (mapcat reduce-form (rest form))))))]
+    (reduce-form form)))
 
 (defn- split-f-name [f-name] (str/split (str f-name) #"/" 2))
 
@@ -137,7 +150,7 @@
                           (str (get (:aliases ns) (symbol (first name))) "/" (second name))
                           (get (:refers ns) (symbol (first name))))]
       {:name resolved-name
-       :pos (extract-pos-from-meta f-name)})))
+       :pos [(extract-pos-from-meta f-name)]})))
 
 (defn- explicitly-required [ns]
   (fn [f-name]
@@ -149,9 +162,10 @@
 ;;; TODO: interesting if it is a definition in same file too
 
 (defn- extract-usages [state form]
-  (update-in state [:model :usages] concat (find-usages (explicitly-required (:ns state))
-                                                        (build-usage (:ns state))
-                                                        form)))
+  (update-in state [:model :usages] (comp (partial merge-with-key :name) concat)
+             (find-usages (explicitly-required (:ns state))
+                          (build-usage (:ns state))
+                          form)))
 
 (defn- guess-data-model [forms]
   (->> forms
