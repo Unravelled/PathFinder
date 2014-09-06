@@ -52,4 +52,8 @@
        (fact "should extract interesting aliased usages with a nested prefix"
              (:usages (analyze (->CljHeuristicAnalyzer)
                                "(ns blah (:require [prefix [foo :as f]])) (f/bar 2)" {}))
-             => (contains (contains {:name "prefix.foo/bar"}))))
+             => (contains (contains {:name "prefix.foo/bar"})))
+       (fact "should extract usages of functions defined within same ns"
+             (:usages (analyze (->CljHeuristicAnalyzer)
+                               "(ns blah) (defn foo [x] (+ x 1)) (foo 6)" {}))
+             => (contains (contains {:name "blah/foo"}))))

@@ -148,7 +148,9 @@
     (let [name (split-f-name f-name)
           resolved-name (if (= (count name) 2)
                           (str (get (:aliases ns) (symbol (first name))) "/" (second name))
-                          (get (:refers ns) (symbol (first name))))]
+                          (get (:refers ns) (symbol (first name))
+                               ;; if not a referred fn then must be defined in this ns
+                               (str (:name ns) "/" (first name))))]
       {:name resolved-name
        :pos [(extract-pos-from-meta f-name)]})))
 
@@ -159,11 +161,21 @@
         (contains? (:aliases ns) (symbol (first name)))
         (contains? (:refers ns) (symbol (first name)))))))
 
-;;; TODO: interesting if it is a definition in same file too
+(defn- defined-in-ns [definitions]
+  (fn [f-name]
+    (let [lookup (->> definitions
+                      (map (comp second split-f-name :name))
+                      (into #{}))]
+      (lookup (str f-name)))))
+
+(defn- any [& fns]
+  (fn [x]
+    (reduce #(or %1 (%2 x)) false fns)))
 
 (defn- extract-usages [state form]
   (update-in state [:model :usages] (comp (partial merge-with-key :name) concat)
-             (find-usages (explicitly-required (:ns state))
+             (find-usages (any (explicitly-required (:ns state))
+                               (defined-in-ns (get-in state [:model :definitions])))
                           (build-usage (:ns state))
                           form)))
 
