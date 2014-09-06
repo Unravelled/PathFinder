@@ -37,14 +37,14 @@
                   first
                   :pos)
              => (every-checker sequential? #(> (count %) 1)))
-       (future-fact "should extract usages inside literal vectors"
-                    (:usages (analyze (->CljHeuristicAnalyzer)
-                                      "(ns blah (:require [foo.bar :refer [baz]])) [:x (baz 6)]" {}))
-                    => (contains (contains {:name "foo.bar/baz"})))
-       (future-fact "should extract usages inside literal maps"
-                    (:usages (analyze (->CljHeuristicAnalyzer)
-                                      "(ns blah (:require [foo.bar :refer [baz]])) {:x (baz 6)}" {}))
-                    => (contains (contains {:name "foo.bar/baz"})))
+       (fact "should extract usages inside literal vectors"
+             (:usages (analyze (->CljHeuristicAnalyzer)
+                               "(ns blah (:require [foo.bar :refer [baz]])) [:x (baz 6)]" {}))
+             => (contains (contains {:name "foo.bar/baz"})))
+       (fact "should extract usages inside literal maps"
+             (:usages (analyze (->CljHeuristicAnalyzer)
+                               "(ns blah (:require [foo.bar :refer [baz]])) {:x (baz 6)}" {}))
+             => (contains (contains {:name "foo.bar/baz"})))
        (fact "should extract interesting referred usages with a nested prefix"
              (:usages (analyze (->CljHeuristicAnalyzer)
                                "(ns blah (:require [prefix [foo :refer [bar]]])) (bar 2)" {}))

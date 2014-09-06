@@ -8,6 +8,10 @@
 (defmacro def- [symbol init?]
   `(def ^:private ~symbol ~init?))
 
+(defn- any [& fns]
+  (fn [x]
+    (reduce #(or %1 (%2 x)) false fns)))
+
 ;; TODO: arbitrary code can be executed during read (and obviously
 ;; evaluation) of clojure code. Currently, these analyzers should only
 ;; be used for trusted source. We should look in to sandboxing this
@@ -132,13 +136,14 @@
 
 (defn- find-usages [interesting-usage? build-usage form]
   (letfn [(reduce-form [form]
-            (when (list? form)
-              (cond
-               (empty? form) nil
-               (= (first form) 'quote) nil
-               :else (if (interesting-usage? (first form))
-                       (cons (build-usage (first form)) (mapcat reduce-form (rest form)))
-                       (mapcat reduce-form (rest form))))))]
+            (cond
+             (not ((any set? map? vector? list?) form)) nil
+             (empty? form) nil
+             (and (list? form) (= (first form) 'quote)) nil
+             (list? form) (if (interesting-usage? (first form))
+                            (cons (build-usage (first form)) (mapcat reduce-form (rest form)))
+                            (mapcat reduce-form (rest form)))
+             :else (mapcat reduce-form form)))]
     (reduce-form form)))
 
 (defn- split-f-name [f-name] (str/split (str f-name) #"/" 2))
@@ -167,10 +172,6 @@
                       (map (comp second split-f-name :name))
                       (into #{}))]
       (lookup (str f-name)))))
-
-(defn- any [& fns]
-  (fn [x]
-    (reduce #(or %1 (%2 x)) false fns)))
 
 (defn- extract-usages [state form]
   (update-in state [:model :usages] (comp (partial merge-with-key :name) concat)
