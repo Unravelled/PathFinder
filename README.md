@@ -3,7 +3,7 @@ PathFinder
 
 ## Build status
 
-[![Build Status](https://api.shippable.com/projects/53fb12ab4997bb4c07a0b5a1/badge/master)](https://www.shippable.com/projects/53fb12ab4997bb4c07a0b5a1)
+[![Build Status](https://api.shippable.com/projects/54144b41f82ab7ebd69ca1a7/badge?branchName=master)](https://app.shippable.com/projects/54144b41f82ab7ebd69ca1a7/builds/latest)
 
 ## Starting up the elasticsearch docker container
 
