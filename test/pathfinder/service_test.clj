@@ -1,6 +1,5 @@
 (ns pathfinder.service-test
   (:use midje.sweet
-        pathfinder.core
         pathfinder.service
         compojure.core
         [ring.mock.request :only [request header]])
