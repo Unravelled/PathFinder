@@ -31,11 +31,9 @@
                                "(ns test (:require [foo.bar :as f])) (+ (f/baz 6) 7)" {}))
              => (contains (contains {:name "foo.bar/baz"})))
        (fact "should extract multiple usages"
-             (->> (analyze (->CljHeuristicAnalyzer)
-                           "(ns test (:require [foo :as f])) (f/bar 3) (f/bar 6)" {})
-                  :usages
-                  first
-                  :pos)
+             (-> (analyze (->CljHeuristicAnalyzer)
+                          "(ns test (:require [foo :as f])) (f/bar 3) (f/bar 6)" {})
+                 :usages first :pos)
              => (every-checker sequential? #(> (count %) 1)))
        (fact "should extract usages inside literal vectors"
              (:usages (analyze (->CljHeuristicAnalyzer)
