@@ -3,7 +3,7 @@
   :url "https://github.com/IHopeYouCanChangeThis/PathFinder"
   :license {:name "Apache License"
             :url "http://www.apache.org/licenses/LICENSE-2.0"}
-  :dependencies [[clojurewerkz/elastisch "2.1.0-beta4"]
+  :dependencies [[clojurewerkz/elastisch "2.1.0-beta9"]
                  [compojure "1.1.8"]
                  [liberator "0.10.0"]
                  [ring "1.0.0"]
