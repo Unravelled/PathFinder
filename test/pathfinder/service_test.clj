@@ -7,6 +7,20 @@
 
 (facts "about the main routes"
   "Bare request returns hello world"
-  ((handler/site main-routes) {:uri "/" :request-method :get})
-  => (contains {:status 200
-                :body "Hello World"}))
+  (app {:uri "/" :request-method :get})
+  => (contains {:status 404})
+  (app {:uri "/projects" :request-method :get})
+  => (contains {:status 200})
+  (app {:uri "/projects" :request-method :post})
+  => (contains {:status 200})
+  (app {:uri "/projects/123" :request-method :get})
+  => (contains {:status 200})
+  (app {:uri "/projects/123" :request-method :put})
+  => (contains {:status 200})
+  (app {:uri "/file" :request-method :get})
+  => (contains {:status 200})
+  (app {:uri "/file" :params {:path "/some/path"} :body "test" :request-method :post})
+  => (contains {:status 200 :body "I am full path:/some/path body: test"})
+  )
+
+
