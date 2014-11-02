@@ -1,7 +1,7 @@
 (ns pathfinder.service
   (:require [liberator.core :refer [resource defresource]]
             [compojure.core :refer :all]
-            [ring.middleware.json as middleware]
+            [compojure.handler :as handler]
             [ring.middleware.params :refer [wrap-params]]
             [compojure.route :as route]))
 
@@ -21,10 +21,10 @@
   "Really bad idea")
 
 (defn get-file [path]
-  "file")
+  (str "file path:" path))
 
 (defn store-file [path body]
-  "I am full")
+  (str "I am full path:" path " body: " body))
 
 (defn update-file [path body]
   "Are you sure?")
@@ -40,7 +40,7 @@
                                                    (GET "/" [] (get-project id))
                                                    (PUT "/" {body :body} (update-project id body))
                                                    (DELETE "/" [] (delete-project id))))))
-  (context "/file/:path" [path] (defoutes file-routes
+  (context "/file" [path] (defroutes file-routes
                               (GET "/" [] (get-file path))
                               (POST "/" {body :body} (store-file path body))
                               (PUT "/" {body :body} (update-file path body))
@@ -50,6 +50,4 @@
 
 
 (def app
-  (-> (handler/api main-routes)
-      (middleware/wrap-json-body)
-      (middleware/wrap-json-response))
+  (wrap-params (handler/api main-routes)))
