@@ -1,11 +1,12 @@
 (ns pathfinder.system
   (:require [ring.adapter.jetty :as jetty]
+            [compojure.handler :as handler]
             [pathfinder.service :as service]))
 
 (defn system
   "Create an application context."
   [config]
-  {:server (service/app)
+  {:server (handler/api service/main-routes)
    :config config})
 
 (defn start [system]

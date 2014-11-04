@@ -2,6 +2,7 @@
   (:require [liberator.core :refer [resource defresource]]
             [compojure.core :refer :all]
             [compojure.handler :as handler]
+            [pathfinder.analyze :as analyze]
             [ring.middleware.params :refer [wrap-params]]
             [compojure.route :as route]))
 
@@ -23,31 +24,33 @@
 (defn get-file [path]
   (str "file path:" path))
 
-(defn store-file [path body]
-  (str "I am full path:" path " body: " body))
-
 (defn update-file [path body]
   "Are you sure?")
 
 (defn delete-file [path]
-  "Shouldnt")
+  "Shouldn't")
+
+;;; TODO:
+(defn stash [output] output)
+;;; TODO:
+(defn present [output] (str output))
+
+(defn store-file [project path body]
+  (-> body
+      (analyze/analyze {:project project
+                        :path path
+                        ;; TODO: the body should probably be a json
+                        ;; wrapper containing both the content and
+                        ;; metadata
+                        :type :clojure})
+      stash
+      present))
+
+(defn project-routes [project]
+  (routes
+   (PUT "/*" {body :body {path :*} :params}
+        (store-file project path (slurp body)))))
 
 (defroutes main-routes
-  (context "/projects" [] (defroutes project-routes
-                            (GET "/" [] (get-all-projects))
-                            (POST "/" {body :body} (index-project body))
-                            (context "/:id" [id] (defroutes project-routes
-                                                   (GET "/" [] (get-project id))
-                                                   (PUT "/" {body :body} (update-project id body))
-                                                   (DELETE "/" [] (delete-project id))))))
-  (context "/file" [path] (defroutes file-routes
-                              (GET "/" [] (get-file path))
-                              (POST "/" {body :body} (store-file path body))
-                              (PUT "/" {body :body} (update-file path body))
-                              (DELETE "/" [] (delete-file path))))
-
+  (context "/projects/:project" [project] (project-routes project))
   (route/not-found "Not Found"))
-
-
-(def app
-  (wrap-params (handler/api main-routes)))
