@@ -15,6 +15,10 @@ or, if you're on OS X:
 
     export "DOCKER_HOST=tcp://`boot2docker ip`:2375"
 
+If you're using boot2docker, you may also see `malformed HTTP response` in your docker command output. To fix that, prefix your docker commands with `--tls` and run:
+
+    export DOCKER_CERT_PATH=~/.boot2docker/certs/boot2docker-vm
+
 You should also add a host alias to your hosts file:
 
     echo "$DOCKER_HOST docker" | sudo tee --append /etc/hosts
