@@ -1,10 +1,13 @@
 (ns pathfinder.service
-  (:require [liberator.core :refer [resource defresource]]
+  (:require [clojure.data.json :as json]
             [compojure.core :refer :all]
             [compojure.handler :as handler]
+            [compojure.route :as route]
+            [liberator.core :refer [resource defresource]]
             [pathfinder.analyze :as analyze]
+            [pathfinder.data.data :as data]
             [ring.middleware.params :refer [wrap-params]]
-            [compojure.route :as route]))
+            [ring.util.response :as response]))
 
 (defn get-all-projects []
   "Sure")
@@ -30,27 +33,28 @@
 (defn delete-file [path]
   "Shouldn't")
 
-;;; TODO:
-(defn stash [output] output)
-;;; TODO:
-(defn present [output] (str output))
+;;; TODO: restore the unimplemented routes
 
-(defn store-file [project path body]
-  (-> body
-      (analyze/analyze {:project project
-                        :path path
-                        ;; TODO: the body should probably be a json
-                        ;; wrapper containing both the content and
-                        ;; metadata
-                        :type :clojure})
-      stash
-      present))
+(defn build-service [data]
+  (letfn [(present [in] ;; TODO: I wouldn't expect presentation to live here long
+            (-> in
+                json/write-str
+                response/response
+                (response/content-type "application/json")))
 
-(defn project-routes [project]
-  (routes
-   (PUT "/*" {body :body {path :*} :params}
-        (store-file project path (slurp body)))))
+          (store-file [project path body]
+            (-> body
+                (analyze/analyze {:project project
+                                  :path path
+                                  ;; TODO: derive this:
+                                  :type :clojure})
+                (->> (data/stash data))
+                present))
 
-(defroutes main-routes
-  (context "/projects/:project" [project] (project-routes project))
-  (route/not-found "Not Found"))
+          (project-routes [project]
+            (routes
+             (PUT "/*" {body :body {path :*} :params}
+                  (store-file project path (slurp body)))))]
+    (routes
+     (context "/projects/:project" [project] (project-routes project))
+     (route/not-found "Not Found"))))
