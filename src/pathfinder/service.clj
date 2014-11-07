@@ -1,9 +1,13 @@
 (ns pathfinder.service
-  (:require [liberator.core :refer [resource defresource]]
+  (:require [clojure.data.json :as json]
             [compojure.core :refer :all]
             [compojure.handler :as handler]
+            [compojure.route :as route]
+            [liberator.core :refer [resource defresource]]
+            [pathfinder.analyze :as analyze]
+            [pathfinder.data.data :as data]
             [ring.middleware.params :refer [wrap-params]]
-            [compojure.route :as route]))
+            [ring.util.response :as response]))
 
 (defn get-all-projects []
   "Sure")
@@ -23,31 +27,34 @@
 (defn get-file [path]
   (str "file path:" path))
 
-(defn store-file [path body]
-  (str "I am full path:" path " body: " body))
-
 (defn update-file [path body]
   "Are you sure?")
 
 (defn delete-file [path]
-  "Shouldnt")
+  "Shouldn't")
 
-(defroutes main-routes
-  (context "/projects" [] (defroutes project-routes
-                            (GET "/" [] (get-all-projects))
-                            (POST "/" {body :body} (index-project body))
-                            (context "/:id" [id] (defroutes project-routes
-                                                   (GET "/" [] (get-project id))
-                                                   (PUT "/" {body :body} (update-project id body))
-                                                   (DELETE "/" [] (delete-project id))))))
-  (context "/file" [path] (defroutes file-routes
-                              (GET "/" [] (get-file path))
-                              (POST "/" {body :body} (store-file path body))
-                              (PUT "/" {body :body} (update-file path body))
-                              (DELETE "/" [] (delete-file path))))
+;;; TODO: restore the unimplemented routes
 
-  (route/not-found "Not Found"))
+(defn build-service [data]
+  (letfn [(present [in] ;; TODO: I wouldn't expect presentation to live here long
+            (-> in
+                json/write-str
+                response/response
+                (response/content-type "application/json")))
 
+          (store-file [project path body]
+            (-> body
+                (analyze/analyze {:project project
+                                  :path path
+                                  ;; TODO: derive this:
+                                  :type :clojure})
+                (->> (data/stash data))
+                present))
 
-(def app
-  (wrap-params (handler/api main-routes)))
+          (project-routes [project]
+            (routes
+             (PUT "/*" {body :body {path :*} :params}
+                  (store-file project path (slurp body)))))]
+    (routes
+     (context "/projects/:project" [project] (project-routes project))
+     (route/not-found "Not Found"))))
