@@ -22,6 +22,22 @@ Or install it yourself as:
 
 Utility that submits files from a GitHub repository to PathFinder. It creates a local clone of the repository you point it to, scrapes the clone directory and sends every file to PathFinder for indexing.
 
+Usage examples:
+
+    $ pf-indexer --help
+    $ pf-indexer Unravelled/PathFinder
+
+__NOTE:__ This assumes you have an instance of PathFinder running locally and implicitly an instance of elasticsearch running locally (the ES endpoint is currently hardcoded in PathFinder).
+
+To start PathFinder, run:
+
+    $ lein repl
+    user=> (reset)
+
+This will start an instance on port 9400.
+
+To start elasticsearch, please follow the docker/boot2docker instructions. PathFinder is currently hardcoded to look for elasticsearch on `docker:9200`, so make sure you've aliased your docker ip in `/etc/hosts`.
+
 TODOs:
 
 * parametrise the PathFinder endpoint (currently hardcoded to localhost:9400)
