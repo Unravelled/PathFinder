@@ -25,7 +25,7 @@ module Pathfinder
 
       def self.upload_file(project_name, file_name, file_content)
         pathfinder_resource = "http://localhost:9400/projects/#{project_name}/#{file_name}"
-        info("Indexing #{pathfinder_resource}")
+        debug("Indexing #{pathfinder_resource}")
         header = { 'Content-Type' => 'text/plain'}
         req = Net::HTTP::Put.new(pathfinder_resource, initheader = header)
         req.body = file_content
@@ -39,7 +39,14 @@ module Pathfinder
           file_content = File.read(file_name)
           file_name.slice!(target_dir)
           response = upload_file(project_name, file_name, file_content)
-          info response.code
+          if response.code != "200"
+            warn "HTTP #{response.code} received for #{file_name}, was not indexed!"
+            debug "Response message was: #{response.message}"
+            # TODO: the response body is currently empty in the case of faliures
+            debug "Response body was:\n#{response.body()}"
+          else
+            debug "Successfully indexed #{file_name}"
+          end
           response
         end
       end

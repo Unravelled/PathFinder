@@ -25,6 +25,6 @@ Utility that submits files from a GitHub repository to PathFinder. It creates a 
 TODOs:
 
 * parametrise the PathFinder endpoint (currently hardcoded to localhost:9400)
-* better error reporting for indexing failures (currently only says file x failed)
+* if the server starts supporting it, wrap the file contents in the appropriate metadata
 * maybe add optional filters to exclude certain files from indexing
 * colors!
