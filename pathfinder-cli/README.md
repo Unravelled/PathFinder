@@ -16,6 +16,15 @@ Or install it yourself as:
 
     $ gem install pathfinder-cli
 
-## Usage
+## Available Utilities
 
-TODO: Write usage instructions here
+### pf-indexer
+
+Utility that submits files from a GitHub repository to PathFinder. It creates a local clone of the repository you point it to, scrapes the clone directory and sends every file to PathFinder for indexing.
+
+TODOs:
+
+* parametrise the PathFinder endpoint (currently hardcoded to localhost:9400)
+* better error reporting for indexing failures (currently only says file x failed)
+* maybe add optional filters to exclude certain files from indexing
+* colors!
