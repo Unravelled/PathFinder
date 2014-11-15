@@ -11,14 +11,13 @@ class App
   include Methadone::CLILogging
   include Pathfinder::Cli
 
-  main do |github_project| # Add args you want: |like,so|
+  main do |github_repo| # Add args you want: |like,so|
     TMP_DIR = '/tmp/pathfinder/'
     Utils.clean_directory! TMP_DIR
 
-    clone_dir = Utils.clone_project(github_project, TMP_DIR)
+    clone_dir = Utils.clone_project(github_repo, TMP_DIR)
 
-    Utils.upload_all_from(github_project, clone_dir)
-
+    Utils.upload_all_from(github_repo, clone_dir)
     # You can access CLI options via
     # the options Hash
   end
@@ -41,6 +40,9 @@ class App
   #
   # # Make an argument optional
   # arg :optional_arg, :optional
+  description "Utility that submits files from a GitHub repository to PathFinder"
+
+  arg :github_repo, "The name of the GitHub repository (for example Unravelled/PathFinder)"
 
   version Pathfinder::Cli::VERSION
 
