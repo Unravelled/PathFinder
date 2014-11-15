@@ -26,7 +26,7 @@ module Pathfinder
       def self.upload_file(project_name, file_name, file_content)
         pathfinder_resource = "http://localhost:9400/projects/#{project_name}/#{file_name}"
         debug("Indexing #{pathfinder_resource}")
-        header = { 'Content-Type' => 'text/plain'}
+        header = { 'Content-Type' => 'text/plain' }
         req = Net::HTTP::Put.new(pathfinder_resource, initheader = header)
         req.body = file_content
         Net::HTTP.new("localhost", 9400).start {|http| http.request(req) }

@@ -6,12 +6,12 @@ require 'pathfinder/cli/version'
 Gem::Specification.new do |spec|
   spec.name          = "pathfinder-cli"
   spec.version       = Pathfinder::Cli::VERSION
-  spec.authors       = ["cimi"]
+  spec.authors       = ["cimi", "gregsexton", "robochuck84"]
   spec.email         = ["alex.ciminian@gmail.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
-  spec.license       = ""
+  spec.summary       = %q{Command-line utilities for PathFinder.}
+  spec.description   = %q{Collection of command line utilities to interact with the PathFinder code index.}
+  spec.homepage      = "https://github.com/Unravelled/PathFinder"
+  spec.license       = "Apache 2.0"
 
   spec.files         = `git ls-files -z`.split("\x0") # `find .`.split("\n")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }

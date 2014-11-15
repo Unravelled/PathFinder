@@ -4,17 +4,18 @@ Command line utilities for the PathFinder application.
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Prerequisites: ruby >= 1.9, rubygems.
 
-    gem 'pathfinder-cli'
+    $ gem build pathfinder-cli.gemspec
+    $ gem install pathfinder-cli-0.0.1.gem
 
-And then execute:
+If rubygems are on your path, then you should be able to run all the utilities from your shell.
 
-    $ bundle
+## Development:
 
-Or install it yourself as:
-
-    $ gem install pathfinder-cli
+    $ bundle install                      # pulls in dependencies
+    $ rake                                # runs tests
+    $ bundle exec bin/<utility> [params]  # runs executable with workspace code
 
 ## Available Utilities
 
@@ -40,7 +41,7 @@ To start elasticsearch, please follow the docker/boot2docker instructions. PathF
 
 TODOs:
 
-* parametrise the PathFinder endpoint (currently hardcoded to localhost:9400)
-* if the server starts supporting it, wrap the file contents in the appropriate metadata
+* parametrise the PathFinder endpoint (currently hardcoded to `localhost:9400`)
+* if the server starts supporting it, wrap file contents with metadata
 * maybe add optional filters to exclude certain files from indexing
-* colors!
+* colors! :)
