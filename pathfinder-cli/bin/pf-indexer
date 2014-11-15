@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-
 require 'optparse'
 require 'methadone'
 require 'git'
@@ -11,36 +10,16 @@ class App
   include Methadone::CLILogging
   include Pathfinder::Cli
 
-  main do |github_repo| # Add args you want: |like,so|
+  main do |github_repo|
     TMP_DIR = '/tmp/pathfinder/'
     Utils.clean_directory! TMP_DIR
 
     clone_dir = Utils.clone_project(github_repo, TMP_DIR)
 
     Utils.upload_all_from(github_repo, clone_dir)
-    # You can access CLI options via
-    # the options Hash
   end
 
-  # Declare command-line interface here
-
-  # description "one line description of your app"
-  #
-  # Accept flags via:
-  # on("--flag VAL","Some flag")
-  # options[flag] will contain VAL
-  #
-  # Specify switches via:
-  # on("--[no-]switch","Some switch")
-  #
-  # Or, just call OptionParser methods on opts
-  #
-  # Require an argument
-  # arg :some_arg
-  #
-  # # Make an argument optional
-  # arg :optional_arg, :optional
-  description "Utility that submits files from a GitHub repository to PathFinder"
+  description "Utility that submits files from a GitHub repository to PathFinder."
 
   arg :github_repo, "The name of the GitHub repository (for example Unravelled/PathFinder)"
 
