@@ -46,8 +46,8 @@
             (-> body
                 (analyze/analyze {:project project
                                   :path path
-                                  ;; TODO: derive this:
-                                  :type :clojure})
+                                  ;; TODO: quick hack to allow indexing other things
+                                  :type (if (.endsWith path ".clj") :clojure :unknown)})
                 (->> (data/stash data))
                 present))
 
