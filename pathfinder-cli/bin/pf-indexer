@@ -10,22 +10,27 @@ class App
   include Methadone::CLILogging
   include Pathfinder::Cli
 
-  main do |github_repo|
+  main do |project_name, project_url|
+    project_url = "https://github.com/#{project_name}.git" if !project_url
+
     TMP_DIR = '/tmp/pathfinder/'
     Utils.clean_directory! TMP_DIR
 
-    clone_dir = Utils.clone_project(github_repo, TMP_DIR)
+    clone_dir = Utils.clone_project(project_name, project_url, TMP_DIR)
 
-    Utils.upload_all_from(github_repo, clone_dir)
+    Utils.upload_all_from(options['name'], clone_dir)
   end
 
-  description "Utility that submits files from a GitHub repository to PathFinder."
+  description 'Utility that submits files from a GitHub repository to PathFinder.'
 
-  arg :github_repo, "The name of the GitHub repository (for example Unravelled/PathFinder)"
+  arg :project_name, 'The name under which the project will be indexed. Supports nested paths. Example: Unravelled/PathFinder'
+  arg :project_url, :optional, "The url the project will be cloned from. Example: https://github.com/Unravelled/PathFinder.git\n\t" +
+                               'If missing, the indexer try and fetch the repo with the given name from GitHub.'
 
   version Pathfinder::Cli::VERSION
 
   use_log_level_option :toggle_debug_on_signal => 'USR1'
 
   go!
+
 end

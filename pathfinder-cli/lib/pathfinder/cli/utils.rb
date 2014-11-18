@@ -9,17 +9,13 @@ module Pathfinder
         Dir.mkdir tmpdir
       end
 
-      def self.clone_project(github_project, tmpdir)
-        author, project_name = github_project.split('/')
-        parent_dir = "#{tmpdir}#{author}"
-        clone_dir = "#{tmpdir}#{github_project}/"
-        Dir.mkdir parent_dir
+      def self.clone_project(project_name, git_url, tmpdir)
+        clone_dir = "#{tmpdir}#{project_name}/"
+        info("Cloning #{project_name} from #{git_url} into #{clone_dir}")
 
-        github_url = "http://github.com/#{github_project}.git"
-        info("Cloning #{github_url} into #{clone_dir}")
-
-        g = Git.clone(github_url, project_name, :path => parent_dir)
+        g = Git.clone(git_url, project_name, :path => tmpdir)
         info("Clone complete")
+
         clone_dir
       end
 
