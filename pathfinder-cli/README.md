@@ -26,7 +26,8 @@ Utility that submits files from a GitHub repository to PathFinder. It creates a 
 Usage examples:
 
     $ pf-indexer --help
-    $ pf-indexer Unravelled/PathFinder
+    $ pf-indexer Unravelled/PathFinder  # indexes from GitHub if no URL is specified
+    $ pf-indexer papers https://cimi@bitbucket.org/cimi/school.git
 
 __NOTE:__ This assumes you have an instance of PathFinder running locally and implicitly an instance of elasticsearch running locally (the ES endpoint is currently hardcoded in PathFinder).
 
