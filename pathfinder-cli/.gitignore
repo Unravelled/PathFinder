@@ -1,6 +1,6 @@
 .DS_Store
-results.html
+/results.html
+/html
 pkg
-html
 *.lock
 *.gem
