@@ -1,0 +1,6 @@
+.DS_Store
+/results.html
+/html
+pkg
+*.lock
+*.gem
