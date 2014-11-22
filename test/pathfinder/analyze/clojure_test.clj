@@ -26,6 +26,10 @@
              (:usages (analyze (->CljHeuristicAnalyzer)
                                "(ns test (:require [foo.bar :refer [baz]])) (+ (baz 6) 7)" {}))
              => (contains (contains {:name "foo.bar/baz"})))
+       (fact "should not explode on :refer :all"
+             (:usages (analyze (->CljHeuristicAnalyzer)
+                               "(ns test (:require [foo.bar :refer :all])) (+ (baz 6) 7)" {}))
+             =not=> (contains (contains {:name "foo.bar/baz"})))
        (fact "should extract interesting aliased usages"
              (:usages (analyze (->CljHeuristicAnalyzer)
                                "(ns test (:require [foo.bar :as f])) (+ (f/baz 6) 7)" {}))

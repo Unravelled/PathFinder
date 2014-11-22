@@ -80,7 +80,8 @@
   (reduce-libspecs (fn [acc prefix spec]
                      (->> (rest spec)
                           (partition 2)
-                          (filter #(= :refer (first %)))
+                          (filter (comp #{:refer} first))
+                          (filter (complement (comp #{:all} second)))
                           (mapcat second)
                           (map (fn [f] [f (str (when prefix (str prefix "."))
                                                (first spec) "/" f)]))
