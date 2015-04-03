@@ -44,12 +44,7 @@
 
           (store-file [project path body]
             (-> body
-                (analyze/analyze {:project project
-                                  :path path
-                                  ;; TODO: quick hack to allow indexing other things
-                                  :type (cond (.endsWith path ".clj") :clojure
-                                              (.endsWith path ".java") :java
-                                              :else :unknown)})
+                (analyze/analyze {:project project :path path})
                 (->> (data/stash data))
                 present))
 

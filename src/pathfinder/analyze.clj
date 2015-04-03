@@ -12,11 +12,17 @@
 (def analyzers {:clojure (->CljHeuristicAnalyzer)
                 :java    (->JavaHeuristicAnalyzer)})
 
+(defn- detect-type [path]
+  (cond (.endsWith path ".clj") :clojure
+        (.endsWith path ".java") :java
+        :else :unknown))
+
 (deftype RoutingAnalyzer []
   a/Analyzer
   (analyze [this source meta]
-    (a/analyze (get analyzers (:type meta) (->IdentityAnalyzer))
-               source meta)))
+    (let [type (detect-type (:path meta))]
+      (a/analyze (get analyzers type (->IdentityAnalyzer))
+                 source (merge {:type type} meta)))))
 
 (defn analyze
   "Take a source file as a string and a map of metadata and produce a
