@@ -47,7 +47,9 @@
                 (analyze/analyze {:project project
                                   :path path
                                   ;; TODO: quick hack to allow indexing other things
-                                  :type (if (.endsWith path ".clj") :clojure :unknown)})
+                                  :type (cond (.endsWith path ".clj") :clojure
+                                              (.endsWith path ".java") :java
+                                              :else :unknown)})
                 (->> (data/stash data))
                 present))
 
