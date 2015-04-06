@@ -4,6 +4,7 @@
   :license {:name "Apache License"
             :url "http://www.apache.org/licenses/LICENSE-2.0"}
   :dependencies [[clojurewerkz/elastisch "2.1.0-beta9"]
+                 [com.github.javaparser/javaparser-core "2.0.0"]
                  [compojure "1.1.8"]
                  [liberator "0.10.0"]
                  [org.clojure/clojure "1.6.0"]
