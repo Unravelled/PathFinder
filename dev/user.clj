@@ -5,7 +5,8 @@
             [clojure.repl :refer :all]
             [clojure.tools.namespace.repl :refer (refresh refresh-all)]
             [pathfinder.system :as sys]
-            [midje.repl :refer (autotest)]))
+            [midje.repl :refer (autotest)]
+            [pathfinder.data.data :as data]))
 
 ;;; this file will be loaded by the repl automatically on start up
 
@@ -21,7 +22,7 @@
   (alter-var-root #'system
     (constantly (sys/system {:jetty {:port 9400
                                      :join? false}
-                             :elasticsearch {:endpoint "http://docker:9200"}}))))
+                             :elasticsearch {:endpoint "http://localhost:9200"}}))))
 
 (defn start
   "Starts the current development system."
