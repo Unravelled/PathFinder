@@ -45,13 +45,19 @@
           (store-file [project path body]
             (-> body
                 (analyze/analyze {:project project :path path})
-                (->> (data/stash data))
+                (->> (data/stash! data))
                 present))
 
           (project-routes [project]
             (routes
              (PUT "/*" {body :body {path :*} :params}
-                  (store-file project path (slurp body)))))]
+                  (store-file project path (slurp body)))
+             (GET "/*" {{path :* query :q} :params}
+                  (present (data/search data {:project project
+                                              :path path
+                                              ;; TODO: create something that parses a query
+                                              ;; string in to a data structure. Currently this is ignored.
+                                              :query query})))))]
     (routes
      (context "/projects/:project" [project] (project-routes project))
      (route/not-found "Not Found"))))
