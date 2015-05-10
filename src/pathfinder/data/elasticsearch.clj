@@ -28,7 +28,8 @@
 (defn- setup-index! [conn]
   (let [mappings {:doc {:properties
                         {:meta {:properties
-                                {:path {:type "string" :index "not_analyzed"}}}}}}]
+                                {:path {:type "string" :index "not_analyzed"}
+                                 :project {:type "string" :index "not_analyzed"}}}}}}]
     (when-not (esi/exists? conn "docs")
       (esi/create conn "docs" :mappings mappings))))
 
