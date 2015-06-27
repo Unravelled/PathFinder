@@ -7,7 +7,8 @@
             [pathfinder.analyze :as analyze]
             [pathfinder.data.data :as data]
             [ring.middleware.params :refer [wrap-params]]
-            [ring.util.response :as response]))
+            [ring.util.response :as response]
+            [schema.core :as s]))
 
 (defn get-all-projects []
   "Sure")
@@ -33,7 +34,8 @@
 (defn delete-file [path]
   "Shouldn't")
 
-;;; TODO: restore the unimplemented routes
+(def search-results {:results [data/doc-schema]
+                     :found s/Int})
 
 (defn build-service [data]
   (letfn [(present [in] ;; TODO: I wouldn't expect presentation to live here long
@@ -53,11 +55,10 @@
              (PUT "/*" {body :body {path :*} :params}
                   (store-file project path (slurp body)))
              (GET "/*" {{path :* query :q} :params}
-                  (present (data/search data {:project project
-                                              :path path
-                                              ;; TODO: create something that parses a query
-                                              ;; string in to a data structure. Currently this is ignored.
-                                              :query query})))))]
+                  (present (s/validate search-results
+                                       (data/search data {:project project
+                                                          :path path
+                                                          :query query}))))))]
     (routes
      (context "/projects/:project" [project] (project-routes project))
      (route/not-found "Not Found"))))

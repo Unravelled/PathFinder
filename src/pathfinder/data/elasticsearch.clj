@@ -3,6 +3,7 @@
             [clojurewerkz.elastisch.rest.document :as esd]
             [clojurewerkz.elastisch.rest.index :as esi]
             [pathfinder.data.data :refer [Data] :as data]
+            [schema.coerce :as coerce]
             [schema.core :as s]))
 
 (defn- search-query [params]
@@ -15,9 +16,11 @@
           (get-in data [:meta :project] "UNKNOWN")
           (get-in data [:meta :path] "UNKNOWN")))
 
+(def coerce-result (coerce/coercer [data/doc-schema] coerce/json-coercion-matcher))
+
 (defn- extract-results [results]
   {:found (get-in results [:hits :total])
-   :results (->> results :hits :hits (map :_source))})
+   :results (->> results :hits :hits (map :_source) coerce-result)})
 
 (deftype ElasticSearch [conn]
   Data
