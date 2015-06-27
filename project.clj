@@ -11,6 +11,7 @@
                  [org.clojure/data.json "0.2.5"]
                  [org.clojure/tools.analyzer.jvm "0.5.4"]
                  [org.clojure/tools.reader "0.8.7"]
+                 [prismatic/schema "0.4.3"]
                  [ring "1.0.0"]
                  [ring/ring-core "1.2.1"]
                  [ring/ring-jetty-adapter "1.3.1"]]

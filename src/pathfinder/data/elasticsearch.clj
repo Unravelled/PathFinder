@@ -2,7 +2,8 @@
   (:require [clojurewerkz.elastisch.rest :as esr]
             [clojurewerkz.elastisch.rest.document :as esd]
             [clojurewerkz.elastisch.rest.index :as esi]
-            [pathfinder.data.data :refer [Data]]))
+            [pathfinder.data.data :refer [Data] :as data]
+            [schema.core :as s]))
 
 (defn- search-query [params]
   {:bool
@@ -21,7 +22,9 @@
 (deftype ElasticSearch [conn]
   Data
   (stash! [this data]
-    (esd/create conn "docs" "doc" data :id (doc-id data))) ;; TODO: set a ttl?
+    (esd/create conn "docs" "doc"
+                (s/validate data/doc-schema data)
+                :id (doc-id data))) ;; TODO: set a ttl?
   (search [this params]
     (extract-results (esd/search conn "docs" "doc" :query (search-query params)))))
 
