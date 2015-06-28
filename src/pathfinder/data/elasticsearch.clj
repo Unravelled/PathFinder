@@ -6,10 +6,11 @@
             [schema.coerce :as coerce]
             [schema.core :as s]))
 
-(defn- search-query [params]
-  {:bool
-   {:must [{:term {:project (:project params)}}
-           {:prefix {:path (:path params)}}]}})
+(defn- es-search-query [{:keys [:project :path :query]}]
+  {:bool {:must (as-> [] $
+                  (if project (conj $ {:term {:project project}}) $)
+                  (if path (conj $ {:prefix {:path path}}) $)
+                  (if query (conj $ {:match {:_all query}}) $))}})
 
 (defn- doc-id [data]
   (format "%s/%s"
@@ -29,7 +30,7 @@
                 (s/validate data/doc-schema data)
                 :id (doc-id data))) ;; TODO: set a ttl?
   (search [this params]
-    (extract-results (esd/search conn "docs" "doc" :query (search-query params)))))
+    (extract-results (esd/search conn "docs" "doc" :query (es-search-query params)))))
 
 (defn- setup-index! [conn]
   (let [mappings {:doc {:properties

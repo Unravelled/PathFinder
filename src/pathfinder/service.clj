@@ -48,17 +48,28 @@
             (-> body
                 (analyze/analyze {:project project :path path})
                 (->> (data/stash! data))
-                present))
-
-          (project-routes [project]
-            (routes
-             (PUT "/*" {body :body {path :*} :params}
-                  (store-file project path (slurp body)))
-             (GET "/*" {{path :* query :q} :params}
-                  (present (s/validate search-results
-                                       (data/search data {:project project
-                                                          :path path
-                                                          :query query}))))))]
-    (routes
-     (context "/projects/:project" [project] (project-routes project))
-     (route/not-found "Not Found"))))
+                present))]
+    (let [project-routes (routes
+                          (PUT "/:project/*" {body :body {project :project path :*} :params}
+                               (store-file project path (slurp body)))
+                          (GET "/" {{query :q} :params}
+                               (->> {:query query}
+                                    (data/search data)
+                                    (s/validate search-results)
+                                    present))
+                          (GET "/:project" {{project :project query :q} :params}
+                               (->> {:project project
+                                     :query query}
+                                    (data/search data)
+                                    (s/validate search-results)
+                                    present))
+                          (GET "/:project/*" {{project :project path :* query :q} :params}
+                               (->> {:project project
+                                     :path path
+                                     :query query}
+                                    (data/search data)
+                                    (s/validate search-results)
+                                    present)))]
+      (routes
+       (context "/projects" [] project-routes)
+       (route/not-found "Not Found")))))
