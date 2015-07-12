@@ -7,7 +7,9 @@
   a/Analyzer
   (analyze [this source meta]
     {:source source
-     :meta meta}))
+     :meta meta
+     :definitions []
+     :usages []}))
 
 (def analyzers {:clojure (->CljHeuristicAnalyzer)
                 :java    (->JavaHeuristicAnalyzer)})
