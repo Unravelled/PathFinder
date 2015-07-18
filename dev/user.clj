@@ -1,12 +1,12 @@
 (ns user
   (:require [clojure.java.io :as io]
-            [clojure.string :as str]
             [clojure.pprint :refer (pprint)]
             [clojure.repl :refer :all]
+            [clojure.string :as str]
             [clojure.tools.namespace.repl :refer (refresh refresh-all)]
-            [pathfinder.system :as sys]
             [midje.repl :refer (autotest)]
-            [pathfinder.data.data :as data]))
+            [pathfinder.data.data :as data]
+            [pathfinder.system :as sys]))
 
 ;;; this file will be loaded by the repl automatically on start up
 
