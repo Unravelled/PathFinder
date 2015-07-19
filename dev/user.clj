@@ -20,9 +20,8 @@
   "Constructs the current development system."
   []
   (alter-var-root #'system
-    (constantly (sys/system {:jetty {:port 9400
-                                     :join? false}
-                             :elasticsearch {:endpoint "http://localhost:9200"}}))))
+                  (constantly (sys/system {:jetty {:port 9400 :join? false}
+                                           :elasticsearch {:endpoint "http://localhost:9200"}}))))
 
 (defn start
   "Starts the current development system."

@@ -6,6 +6,7 @@
             [liberator.core :refer [resource defresource]]
             [pathfinder.analyze :as analyze]
             [pathfinder.data.data :as data]
+            [pathfinder.query :as query]
             [ring.middleware.params :refer [wrap-params]]
             [ring.util.response :as response]
             [schema.core :as s]))
@@ -53,20 +54,19 @@
                           (PUT "/:project/*" {body :body {project :project path :*} :params}
                                (store-file project path (slurp body)))
                           (GET "/" {{query :q} :params}
-                               (->> {:query query}
+                               (->> (query/parse query)
                                     (data/search data)
                                     (s/validate search-results)
                                     present))
                           (GET "/:project" {{project :project query :q} :params}
-                               (->> {:project project
-                                     :query query}
+                               (->> (query/parse query)
+                                    (merge {:project project})
                                     (data/search data)
                                     (s/validate search-results)
                                     present))
                           (GET "/:project/*" {{project :project path :* query :q} :params}
-                               (->> {:project project
-                                     :path path
-                                     :query query}
+                               (->> (query/parse query)
+                                    (merge {:project project :path path})
                                     (data/search data)
                                     (s/validate search-results)
                                     present)))]

@@ -1,16 +1,24 @@
 (ns pathfinder.data.elasticsearch
-  (:require [clojurewerkz.elastisch.rest :as esr]
-            [clojurewerkz.elastisch.rest.document :as esd]
-            [clojurewerkz.elastisch.rest.index :as esi]
-            [pathfinder.data.data :refer [Data] :as data]
-            [schema.coerce :as coerce]
-            [schema.core :as s]))
+  (:require [clojure.string :as str]
+            [clojurewerkz.elastisch.rest :as esr]
+            [clojurewerkz.elastisch.rest
+             [document :as esd]
+             [index :as esi]]
+            [pathfinder.data.data :as data :refer [Data]]
+            [schema
+             [coerce :as coerce]
+             [core :as s]]))
 
-(defn- es-search-query [{:keys [:project :path :query]}]
+;;; TODO: support the remaining query filters
+(defn- es-search-query [{:keys [:project :path :terms :filetype :definition]}]
   {:bool {:must (as-> [] $
                   (if project (conj $ {:term {:project project}}) $)
+                  (if filetype (conj $ {:term {:meta.type (name filetype)}}) $)
+                  (if definition (conj $ {:match {:definitions.name definition}}) $)
+                  ;; TODO: support globs -- do this with multiple path
+                  ;; expressions, need to change indexing strategy too
                   (if path (conj $ {:prefix {:path path}}) $)
-                  (if query (conj $ {:match {:_all query}}) $))}})
+                  (if-not (empty? terms) (conj $ {:match {:_all (str/join " " terms)}}) $))}})
 
 (defn- doc-id [data]
   (format "%s/%s"
