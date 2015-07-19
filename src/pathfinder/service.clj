@@ -72,5 +72,5 @@
                                     present)))]
       (routes
        (context "/projects" [] project-routes)
-       (route/files "/")
+       (route/resources "/")
        (route/not-found "Not Found")))))
