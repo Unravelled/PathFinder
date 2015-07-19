@@ -1,12 +1,12 @@
 (ns user
   (:require [clojure.java.io :as io]
-            [clojure.string :as str]
             [clojure.pprint :refer (pprint)]
             [clojure.repl :refer :all]
+            [clojure.string :as str]
             [clojure.tools.namespace.repl :refer (refresh refresh-all)]
-            [pathfinder.system :as sys]
             [midje.repl :refer (autotest)]
-            [pathfinder.data.data :as data]))
+            [pathfinder.data.data :as data]
+            [pathfinder.system :as sys]))
 
 ;;; this file will be loaded by the repl automatically on start up
 
@@ -20,9 +20,8 @@
   "Constructs the current development system."
   []
   (alter-var-root #'system
-    (constantly (sys/system {:jetty {:port 9400
-                                     :join? false}
-                             :elasticsearch {:endpoint "http://localhost:9200"}}))))
+                  (constantly (sys/system {:jetty {:port 9400 :join? false}
+                                           :elasticsearch {:endpoint "http://localhost:9200"}}))))
 
 (defn start
   "Starts the current development system."
