@@ -72,5 +72,5 @@
                                     present)))]
       (routes
        (context "/projects" [] project-routes)
-       (route/resources "/")
+       (route/files "/" {:root "resources/public"})
        (route/not-found "Not Found")))))
