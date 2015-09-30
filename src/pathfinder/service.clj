@@ -43,7 +43,8 @@
             (-> in
                 json/write-str
                 response/response
-                (response/content-type "application/json")))
+                (response/content-type "application/json")
+                (response/header "Access-Control-Allow-Origin" "*")))
 
           (store-file [project path body]
             (-> body
