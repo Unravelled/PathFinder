@@ -5,7 +5,7 @@
             [quiescent.dom :as d]))
 
 (defn enter-key?
-  "Returns true if an even was the enter key"
+  "Returns true if an event was the enter key"
   [evt]
   (= 13 (.-keyCode evt)))
 

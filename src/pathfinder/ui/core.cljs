@@ -12,12 +12,12 @@
 
 (defn update-state
   [app display-text]
-  (let [new-state (swap! (:state app) assoc :search-results display-text)]
-    (render/request-render app)))
+  (swap! (:state app) assoc :search-results display-text)
+  (render/request-render app))
 
 (defn query-server
   [app val]
-  (GET (str (:server-uri app) "/projects?q=" val)
+  (GET (str "/projects?q=" val)
        {:handler (partial update-state app)
         :response-format :json
         :keywords? true}))
