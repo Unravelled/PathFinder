@@ -5,6 +5,31 @@ PathFinder
 
 [![Build Status](https://api.shippable.com/projects/54144b41f82ab7ebd69ca1a7/badge?branchName=master)](https://app.shippable.com/projects/54144b41f82ab7ebd69ca1a7/builds/latest)
 
+## Starting PathFinder for local development
+
+Start up the lein repl and (reset):
+```
+➜ PathFinder git:(master) lein repl
+user=> (reset)
+```
+
+If you're developing the front-end, start up figwheel for compiling the clojurescript and auto-reloading. You can also inject cljs code in the page through the figwheel repo:
+
+```
+➜  PathFinder git:(master) lein figwheel
+cljs.user=> (js/alert 'Figwheel works!')
+```
+
+To compile scss/sass to css you can run `lein sass`. To watch files for changes, you can use the watch task in lein sass, if you have figwheel running it will auto-reload your browser when the compiled css changes.
+
+```
+➜  PathFinder git:(scss) lein sass watch
+```
+
+Caveats:
+
+* You might need to change the endpoint in `user.clj` to a running instance of elasticsearch if you don't have a local docker instance.
+
 ## Starting up the elasticsearch docker container
 
 First, make sure you have docker installed. For Ubuntu this should be as straightforward as installing an aptitude package. For OS X please see the boot2docker instructions below. Then do:
