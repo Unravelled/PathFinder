@@ -1,6 +1,6 @@
 (defproject pathfinder "0.1.0-SNAPSHOT"
   :description "A code search application"
-  :url "https://github.com/IHopeYouCanChangeThis/PathFinder"
+  :url "https://github.com/Unravelled/PathFinder"
   :license {:name "Apache License"
             :url "http://www.apache.org/licenses/LICENSE-2.0"}
 
@@ -44,6 +44,10 @@
                                    :main pathfinder.ui.core
                                    :optimizations :advanced
                                    :pretty-print false}}]}
+
+  ;; you can run `lein sass watch` to automatically compile css
+  :sass {:src "src/pathfinder/ui/style"
+         :dst "resources/public/css"}
 
   :figwheel {:css-dirs ["resources/public/css"]
              :nrepl-port 7888}
