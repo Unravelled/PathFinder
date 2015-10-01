@@ -23,12 +23,11 @@
                       (fn [evt]
                         (when (enter-key? evt)
                           (let [v (.-value (.-target evt))]
-                            (am/go (a/>! submit-ch v))
-                            (set! (.-value (.-target evt)) ""))))
+                            (am/go (a/>! submit-ch v)))))
                       :autoFocus true})))
 
 (q/defcomponent Code-block
-  :on-mount #(.highlightBlock js/hljs %)
+  :on-render #(.highlightBlock js/hljs %)
   [source]
   (d/pre nil (d/code nil source)))
 
