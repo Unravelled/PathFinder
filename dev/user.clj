@@ -21,7 +21,8 @@
   []
   (alter-var-root #'system
                   (constantly (sys/system {:jetty {:port 9400 :join? false}
-                                           :elasticsearch {:endpoint "http://localhost:9200"}}))))
+                                           :elasticsearch {:endpoint "http://gs.aka.amazon.com:9200"}}))))
+
 
 (defn start
   "Starts the current development system."

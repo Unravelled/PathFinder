@@ -20,7 +20,9 @@
                  [ring/ring-core "1.2.1"]
                  [ring/ring-devel "1.2.1"]
                  [ring/ring-jetty-adapter "1.3.1"]
-                 [sablono "0.3.4"]]
+                 [sablono "0.3.4"]
+                 [quiescent "0.2.0-RC2"]
+                 [cljs-ajax "0.3.13"]]
 
   :plugins [[lein-cljsbuild "1.0.5"]
             [lein-figwheel "0.3.5"]]
@@ -29,13 +31,12 @@
 
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src"]
-
-                        :figwheel { :on-jsload "pathfinder.ui.core/on-js-reload" }
-
+                        :figwheel true
                         :compiler {:main pathfinder.ui.core
                                    :asset-path "js/compiled/out"
                                    :output-to "resources/public/js/compiled/pf.js"
                                    :output-dir "resources/public/js/compiled/out"
+                                   :optimizations :none
                                    :source-map-timestamp true }}
                        {:id "min"
                         :source-paths ["src"]

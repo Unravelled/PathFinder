@@ -18,7 +18,7 @@ class App
 
     clone_dir = Utils.clone_project(project_name, project_url, TMP_DIR)
 
-    Utils.upload_all_from(options['name'], clone_dir)
+    Utils.upload_all_from(project_name, clone_dir)
 
     Utils.clean_directory! TMP_DIR
   end
