@@ -18,8 +18,7 @@
 
 (def ^:private parser
   (insta/parser
-   "S        = ((word | tagged) ws?)*
-    words    = word (ws word)*
+   "S        = ws? ((word | tagged) ws?)*
     tagged   = tag ws? word
     tag      = tag-word ':'
     tag-word = 'ft' | 'filetype' | 'proj' | 'project' | 'path' | 'type' | 'def' | 'definition' | 'usage'

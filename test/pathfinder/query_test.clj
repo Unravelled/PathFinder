@@ -23,6 +23,7 @@
        (fact "should narrow by file type"
              (parse "ft: clojure") => (contains {:filetype :clojure}))
        (fact "should narrow by project"
+             (parse " proj: projectx") => (contains {:project "projectx"})
              (parse "proj: projectx") => (contains {:project "projectx"})
              (parse "project: projectx") => (contains {:project "projectx"}))
        (fact "should narrow by explicit path"
