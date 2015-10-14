@@ -6,9 +6,6 @@
             [pathfinder.present :as present]
             [pathfinder.query :as query]))
 
-;;; TODO: for each of these resources, need to wrap everything in try
-;;; catch and delegate to error presentation
-
 ;;; TODO: need to add time taken to service calls
 
 (defn build-service [data]

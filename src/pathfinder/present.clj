@@ -4,6 +4,8 @@
             [ring.util.response :as response]
             [schema.core :as s]))
 
+(def error-result {:msg s/Str})
+
 (def document-stash-result {})
 
 (def search-results {:results [data/doc-schema]
@@ -12,7 +14,18 @@
 
 (def document-result {:document s/Str})
 
+;;; TODO: we output in latin 1 (on my mac anyway, maybe default
+;;; encoding?!). This is added to the content-type presumably by ring?
+
 ;;; TODO: generate these presentation functions?
+
+(defn exception [ex]
+  (-> {:msg (.getMessage ex)}
+      (->> (s/validate error-result))
+      json/write-str
+      response/response
+      (response/status 500)
+      (response/content-type "application/vnd.pf.error+json; version=1.0")))
 
 (defn document-stash [stash-result]
   (-> {}
