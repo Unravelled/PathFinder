@@ -8,14 +8,6 @@
 ;;; can validate their query. Need a way of mapping from the output
 ;;; struct to a user-friendly string.
 
-(def query-schema {(s/required-key :terms) [s/Str]
-                   (s/optional-key :project) s/Str
-                   (s/optional-key :path) s/Str
-                   (s/optional-key :filetype) s/Keyword
-                   (s/optional-key :definition) s/Str
-                   (s/optional-key :definition-type) data/definition-types
-                   (s/optional-key :usage) s/Str})
-
 (def ^:private parser
   (insta/parser
    "S        = ws? ((word | tagged) ws?)*
@@ -63,4 +55,4 @@
          normalize-keys
          normalize-file-type
          normalize-def-type
-         (s/validate query-schema))))
+         (s/validate data/query-schema))))
