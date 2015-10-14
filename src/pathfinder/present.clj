@@ -14,14 +14,16 @@
 
 (def document-result {:document s/Str})
 
+(defn validate [data schema] (s/validate schema data))
+
+;;; TODO: need an index json doc to bootstrap ui from
+
 ;;; TODO: we output in latin 1 (on my mac anyway, maybe default
 ;;; encoding?!). This is added to the content-type presumably by ring?
 
-;;; TODO: generate these presentation functions?
-
 (defn exception [ex]
   (-> {:msg (.getMessage ex)}
-      (->> (s/validate error-result))
+      (validate error-result)
       json/write-str
       response/response
       (response/status 500)
@@ -29,7 +31,7 @@
 
 (defn document-stash [stash-result]
   (-> {}
-      (->> (s/validate document-stash-result))
+      (validate document-stash-result)
       json/write-str
       response/response
       (response/status 204)
@@ -38,7 +40,7 @@
 
 (defn query-results [results]
   (-> results
-      (->> (s/validate search-results))
+      (validate search-results)
       json/write-str
       response/response
       (response/status 200)
@@ -46,7 +48,7 @@
 
 (defn document [document]
   (-> document
-      (->> (s/validate document-result))
+      (validate document-result)
       json/write-str
       response/response
       (response/status 200)
