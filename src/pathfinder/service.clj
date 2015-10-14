@@ -6,7 +6,11 @@
             [pathfinder.present :as present]
             [pathfinder.query :as query]))
 
-;;; TODO: need to add time taken to service calls
+(defmacro instrument [& body]
+  `(let [start# (System/currentTimeMillis)
+         result# (do ~@body)
+         end# (System/currentTimeMillis)]
+     (assoc result# :time (- end# start#))))
 
 (defn build-service [data]
   (let [project-routes (routes
@@ -19,17 +23,20 @@
                         (GET "/" {{query :q} :params}
                              (->> (query/parse query)
                                   (data/search data)
+                                  instrument
                                   present/query-results))
                         (GET "/:project" {{project :project query :q} :params}
                              (->> (query/parse query)
                                   (merge {:project project})
                                   (data/search data)
+                                  instrument
                                   present/query-results))
                         (GET "/:project/*" {{project :project path :* query :q} :params}
                              (->> (query/parse query)
                                   (merge {:project project :path path})
                                   (data/search data)
-                                  ;; TODO: when only one result should present a document
+                                  instrument
+                                  ;; TODO: when only one result, should present a document
                                   present/query-results)))]
     (routes
      (context "/projects" [] project-routes)

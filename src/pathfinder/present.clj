@@ -12,7 +12,8 @@
                      :found s/Int
                      :time s/Int})
 
-(def document-result {:document s/Str})
+(def document-result {:document s/Str
+                      :time s/Int})
 
 (defn validate [data schema] (s/validate schema data))
 
