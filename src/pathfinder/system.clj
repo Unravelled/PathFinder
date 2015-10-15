@@ -1,6 +1,7 @@
 (ns pathfinder.system
   (:require [compojure.handler :as handler]
             [pathfinder.data.elasticsearch :as es]
+            [pathfinder.present :as present]
             [pathfinder.service :as service]
             [ring.adapter.jetty :as jetty]
             [ring.middleware.stacktrace :as trace]))
