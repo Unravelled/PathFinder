@@ -3,7 +3,7 @@
 
 (defprotocol Data
   (stash! [this data])
-  (search [this params]))
+  (search [this query]))
 
 (def pos-schema {:end-column s/Int
                  :column s/Int
@@ -23,6 +23,14 @@
                               :protocol
                               :record
                               :struct))
+
+(def query-schema {(s/required-key :terms) [s/Str]
+                   (s/optional-key :project) s/Str
+                   (s/optional-key :path) s/Str
+                   (s/optional-key :filetype) s/Keyword
+                   (s/optional-key :definition) s/Str
+                   (s/optional-key :definition-type) definition-types
+                   (s/optional-key :usage) s/Str})
 
 (def doc-schema {:meta {:type s/Keyword
                         :project s/Str

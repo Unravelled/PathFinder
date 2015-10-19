@@ -23,7 +23,6 @@
                   (constantly (sys/system {:jetty {:port 9400 :join? false}
                                            :elasticsearch {:endpoint "http://gs.aka.amazon.com:9200"}}))))
 
-
 (defn start
   "Starts the current development system."
   []

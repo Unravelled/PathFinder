@@ -37,8 +37,8 @@
     (esd/create conn "docs" "doc"
                 (s/validate data/doc-schema data)
                 :id (doc-id data))) ;; TODO: set a ttl?
-  (search [this params]
-    (extract-results (esd/search conn "docs" "doc" :query (es-search-query params)))))
+  (search [this query]
+    (extract-results (esd/search conn "docs" "doc" :query (es-search-query query)))))
 
 (defn- setup-index! [conn]
   (let [mappings {:doc {:properties
